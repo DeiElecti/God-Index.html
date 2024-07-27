@@ -1,50 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>David and Jesus: Parallels in Trials and Temptations</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
-        h1, h2 { color: #2c3e50; text-align: center; }
-        .intro { background-color: #ecf0f1; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .comparison-table th, .comparison-table td { border: 1px solid #bdc3c7; padding: 12px; text-align: left; }
-        .comparison-table th { background-color: #3498db; color: white; }
-        .comparison-table tr:nth-child(even) { background-color: #ecf0f1; }
-        .comparison-table tr:hover { background-color: #e0e0e0; }
-        .footer { text-align: center; margin-top: 20px; font-style: italic; }
-    </style>
-</head>
-<body>
-    <h1>David and Jesus: Parallels in Trials and Temptations</h1>
-    
-    <div class="intro">
-        <p>Explore the fascinating parallels between David's time hiding from Saul and Jesus' 40 days of temptation. This comparison highlights their experiences and the lessons we can draw for our own spiritual journeys.</p>
-    </div>
+# Biblical Trials: David, Jesus, and Solomon
 
-    <table class="comparison-table">
-        <thead>
-            <tr>
-                <th>Aspect</th>
-                <th>David</th>
-                <th>Jesus</th>
-                <th>Lesson for Congregation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Setting</td>
-                <td>Wilderness, hiding from Saul</td>
-                <td>Wilderness, fasting for 40 days</td>
-                <td>God often uses periods of isolation or hardship for spiritual growth</td>
-            </tr>
-            <!-- Add more rows here -->
-        </tbody>
-    </table>
+## Overview
 
-    <div class="footer">
-        <p>Use this comparison to reflect on how God prepares and refines His chosen leaders through trials and temptations.</p>
-    </div>
-</body>
-</html>
+This project presents a comparative study of the trials faced by three significant biblical figures: David, Jesus, and Solomon. The website offers insights into their experiences, challenges, and the lessons we can draw from their stories.
+
+## Website Content
+
+The website includes:
+
+1. A comprehensive table comparing various aspects of the trials faced by David, Jesus, and Solomon.
+2. Lessons for the congregation derived from each aspect of their experiences.
+3. An introduction to the topic and a concluding note encouraging reflection and application.
+
+## Viewing the Website
+
+You can view the live website at: [https://yourusername.github.io/biblical-trials/](https://yourusername.github.io/biblical-trials/)
+
+(Replace 'yourusername' with your actual GitHub username)
+
+## Local Development
+
+To run this website locally:
+
+1. Clone this repository:
+2. Open the `index.html` file in your web browser.
+
+## Contributing
+
+Contributions to improve the content or design are welcome. Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes.
+4. Commit your changes (`git commit -am 'Add some feature'`).
+5. Push to the branch (`git push origin feature-branch`).
+6. Create a new Pull Request.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Contact
+
+If you have any questions or suggestions, please open an issue in this repository.
+
+---
+
+We hope this website serves as a valuable resource for studying and discussing biblical trials and their relevance to our lives today.
