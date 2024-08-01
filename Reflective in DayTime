@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflective Logo Daytime Appearance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin: 20px;
+            display: inline-block;
+            text-align: center;
+            line-height: 200px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #888; /* Simulating the grey/silver reflective color */
+        }
+        .dark-bg {
+            background-color: #333;
+            color: #eee;
+        }
+        .light-bg {
+            background-color: #eee;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h2>Reflective Logo Daytime Appearance</h2>
+    <div class="logo dark-bg">LOGO</div>
+    <div class="logo light-bg">LOGO</div>
+</body>
+</html>
