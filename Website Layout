@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Diagrams by Dei Electi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header, .footer {
+            background-color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 24px;
+        }
+        .subheader {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        .main-content {
+            display: flex;
+            justify-content: center;
+        }
+        .left-panel, .right-panel {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .left-panel {
+            background-color: white;
+            color: black;
+        }
+        .right-panel {
+            background-color: black;
+            color: white;
+        }
+        .brand-name {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .tagline {
+            font-size: 24px;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        .icons {
+            text-align: center;
+            font-size: 36px;
+        }
+        .purple-text {
+            color: purple;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Human Diagrams
+        <div class="icons">○ ○ ○</div>
+    </div>
+    
+    <div class="subheader">by Dei Electi</div>
+    
+    <div class="main-content">
+        <div class="left-panel">
+            <div class="brand-name">RIZZ★</div>
+            <div class="tagline">
+                Fabrics for<br>
+                Playful & Sweet<br>
+                Humans
+            </div>
+            <div class="icons">☺ ☺<br>♀ ♂</div>
+        </div>
+        <div class="right-panel">
+            <div class="brand-name">Aura.</div>
+            <div class="purple-text">ATTIRE</div>
+            <div class="purple-text">FOR</div>
+            <div class="icons">| |</div>
+            <div class="purple-text">THE</div>
+            <div class="purple-text">EXCEPTIONAL.</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Human Diagrams
+        <div class="icons">○ ○ ○</div>
+    </div>
+</body>
+</html>
