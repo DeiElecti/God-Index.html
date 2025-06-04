@@ -1,0 +1,46 @@
+# Dual-iPhone Multicam Recorder
+
+This directory contains a starting point for the Swift project described in the PRD.
+The goal is to allow two iPhones to record front and back cameras simultaneously
+and keep their clips in sync.
+
+The provided Swift files illustrate the core components:
+
+- `PeerSessionManager.swift`: handles device discovery and communication with
+  `MultipeerConnectivity`.
+- `ClockSync.swift`: demonstrates how you could obtain an accurate clock using
+  the [Kronos](https://github.com/MobileNativeFoundation/Kronos) library.
+- `MultiCamRecorder.swift`: sets up an `AVCaptureMultiCamSession` to capture from
+  both cameras and record to local files.
+- `RecordingCoordinator.swift`: brings the pieces together to schedule a synced
+  recording start time and produce a sync cue.
+- `PreflightChecks.swift`: verifies battery and storage before recording starts.
+- `SyncCueGenerator.swift`: flashes the screen and plays a tone at T0 for easier alignment.
+- `AudioSync.swift`: simple vDSP-based audio correlation to refine clip offsets.
+- `ClipManager.swift`: lists recorded movies, allows deletion, and purges old clips.
+- `BatteryMonitor.swift`: watches battery level during recording and stops the session if it falls below 5%.
+- `ThermalMonitor.swift`: observes device thermal state and stops recording when it becomes too hot.
+
+The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
+can be integrated into one.
+
+## Usage
+
+1. Add these Swift files to your Xcode project.
+2. Ensure your project includes the Kronos package for NTP time sync.
+3. Build and run on two iOS devices with multi-camera support (A12 or later).
+4. Use one device as the host; it will advertise over `MultipeerConnectivity`.
+5. When both devices are connected, press record. They will negotiate a start
+   time three seconds in the future and start capturing simultaneously.
+
+The coordinator performs basic preflight checks (battery and disk space). At
+the scheduled start, a flash and tone are emitted so the clips can be
+auto-aligned later using `AudioSync.offset`.
+While recording, `BatteryMonitor` watches the remaining charge and
+automatically stops the session if it drops below 5%. `ThermalMonitor`
+likewise ends the recording if the device reaches a serious thermal state.
+
+Use `ClipManager` to list and clean up recordings after a session.
+
+This skeleton omits UI and error handling for brevity but provides a foundation
+for the networking, timing, and recording workflow.
