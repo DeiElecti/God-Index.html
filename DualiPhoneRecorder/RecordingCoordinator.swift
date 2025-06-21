@@ -14,6 +14,7 @@ final class RecordingCoordinator {
     private let diskMonitor = DiskSpaceMonitor()
     private let orientationMonitor = OrientationMonitor()
     private let connectivityMonitor = ConnectivityMonitor()
+    private let logger = EventLogger()
 
     private var countdownView: CountdownView?
 
@@ -34,16 +35,22 @@ final class RecordingCoordinator {
             self?.handlePeerDisconnect()
         }
         switch role {
-        case .host: peer.startHosting()
-        case .guest: peer.joinSession()
+        case .host:
+            peer.startHosting()
+            logger?.log("Started hosting session")
+        case .guest:
+            peer.joinSession()
+            logger?.log("Joined session as guest")
         }
         connectivityMonitor.onConnect = {
             ClockSync.shared.resync()
+            self.logger?.log("Network reachable")
         }
         connectivityMonitor.onDisconnect = { [weak self] in
             self?.handleNetworkLoss()
         }
         connectivityMonitor.start()
+        logger?.log("Coordinator initialised")
     }
 
     /// Called by UI when user taps record.
@@ -52,6 +59,7 @@ final class RecordingCoordinator {
         startTime = start
         let message = withUnsafeBytes(of: start.bitPattern) { Data($0) }
         try? peer.send(data: message)
+        logger?.log("Initiated recording for timestamp \(start)")
         scheduleStart(at: start)
     }
 
@@ -82,6 +90,7 @@ final class RecordingCoordinator {
 
     private func startRecording() {
         guard let url = outputURL() else { return }
+        logger?.log("Preparing to record")
         do {
             try PreflightChecks.verify()
         } catch {
@@ -92,6 +101,7 @@ final class RecordingCoordinator {
         let mode: MultiCamRecorder.Mode = AVCaptureMultiCamSession.isMultiCamSupported ? .dual : .single
         try? recorder.configure(mode: mode)
         recorder.start(to: url, orientation: OrientationMonitor.currentOrientation)
+        logger?.log("Started recording to \(url.lastPathComponent)")
         HapticFeedback.recordingStarted()
         SyncCueGenerator.trigger()
         batteryMonitor.onCriticalLevel = { [weak self] in
@@ -112,6 +122,7 @@ final class RecordingCoordinator {
 
         orientationMonitor.onOrientationChange = { [weak self] orientation in
             self?.recorder.update(orientation: orientation)
+            self?.logger?.log("Orientation changed to \(orientation.rawValue)")
         }
         orientationMonitor.start()
     }
@@ -119,6 +130,7 @@ final class RecordingCoordinator {
     func stop() {
         recorder.stop()
         HapticFeedback.recordingStopped()
+        logger?.log("Recording stopped")
         clipManager.purgeOlderThan(days: 30)
         batteryMonitor.stopMonitoring()
         thermalMonitor.stopMonitoring()
@@ -142,15 +154,18 @@ final class RecordingCoordinator {
 
     private func handlePeerConnect() {
         print("Peer connected")
+        logger?.log("Peer connected")
     }
 
     private func handlePeerDisconnect() {
         print("Peer disconnected")
+        logger?.log("Peer disconnected")
         stop()
     }
 
     private func handleNetworkLoss() {
         print("Network disconnected")
+        logger?.log("Network disconnected")
         stop()
     }
 }

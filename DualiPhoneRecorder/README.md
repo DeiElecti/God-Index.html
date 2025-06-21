@@ -31,6 +31,7 @@ The provided Swift files illustrate the core components:
   `RecordingCoordinator` can stop recording if the peer disconnects.
 - `ConnectivityMonitor.swift`: watches overall network reachability and stops
   recording when connectivity drops, resyncing the clock when it returns.
+- `EventLogger.swift`: saves timestamped events to `events.log` for troubleshooting.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -56,6 +57,7 @@ If the connection to the peer drops, `RecordingCoordinator` is notified and
 automatically stops the recording to avoid unsynchronised clips.
 If overall network connectivity is lost, `ConnectivityMonitor` also ends the
 session and re-syncs the clock once the connection returns.
+All of these events are written to `events.log` by `EventLogger` for later review.
 
 Use `ClipManager` to list and clean up recordings after a session.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
