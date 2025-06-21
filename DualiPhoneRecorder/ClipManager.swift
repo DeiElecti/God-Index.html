@@ -60,4 +60,12 @@ final class ClipManager {
         }
         return lookup.map { PairedClips(id: $0.key, master: $0.value.0, remote: $0.value.1) }
     }
+
+    /// Deletes both clips associated with the given pair.
+    func delete(pair: PairedClips) throws {
+        try delete(pair.master)
+        if let remote = pair.remote {
+            try delete(remote)
+        }
+    }
 }
