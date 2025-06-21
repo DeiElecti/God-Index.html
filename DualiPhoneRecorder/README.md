@@ -34,6 +34,8 @@ The provided Swift files illustrate the core components:
 - `ConnectivityMonitor.swift`: watches overall network reachability and stops
   recording when connectivity drops, resyncing the clock when it returns.
 - `EventLogger.swift`: saves timestamped events to `events.log` for troubleshooting.
+- `ThumbnailGenerator.swift`: creates still previews for each clip so they can be
+  displayed in a grid or exported as artwork.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -66,6 +68,7 @@ Use `ClipManager` to list and clean up recordings after a session. The new `pair
 Call `delete(pair:)` to remove both clips at once when you no longer need them.
 Invoke `ClipExporter.export` with a pair's URLs to share them via the iOS share sheet or AirDrop.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
+Generate thumbnails with `ThumbnailGenerator.thumbnail(for:)` to display previews in a clip grid.
 
 This skeleton omits UI and error handling for brevity but provides a foundation
 for the networking, timing, and recording workflow.
