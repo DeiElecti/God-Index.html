@@ -24,6 +24,7 @@ The provided Swift files illustrate the core components:
 - `ClipManager.swift`: lists recorded movies, allows deletion, purges old clips, groups paired clips by session ID via `pairedClips()`, and can delete an entire pair via `delete(pair:)`.
 - `ClipExporter.swift`: presents a share sheet so paired clips can be exported or AirDropped.
 - `ClipAligner.swift`: computes audio offsets between master and remote clips for post-recording alignment.
+- `ClipMerger.swift`: combines master and remote clips side-by-side into a single movie file.
 - `RecordingSession.swift`: defines a session identifier, start timestamp, and optional duration so both devices name files consistently and stop at the same time.
 - `RecordingCoordinator.initiateRecording(duration:)` lets you specify a length so sessions stop automatically after the given time.
 - `BatteryMonitor.swift`: watches battery level during recording and stops the session if it falls below 5%.
@@ -77,6 +78,7 @@ Use `ClipManager` to list and clean up recordings after a session. The new `pair
 Call `delete(pair:)` to remove both clips at once when you no longer need them.
 Invoke `ClipExporter.export` with a pair's URLs to share them via the iOS share sheet or AirDrop.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
+Use `ClipMerger.merge` to create a single side-by-side movie for quick preview or sharing.
 `RecordingCoordinator` now generates thumbnails automatically when recording finishes. When both clips from a session are available it also stores their offset using `ClipMetadata`, so later edits can apply the correction automatically. You can call `ThumbnailGenerator.thumbnail(for:)` to regenerate a preview image for any clip.
 If a duration was supplied when initiating the recording, the recorder stops automatically when that time elapses.
 

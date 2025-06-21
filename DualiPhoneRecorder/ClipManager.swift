@@ -97,4 +97,13 @@ final class ClipManager {
     func metadata(for pair: PairedClips) -> ClipMetadata? {
         ClipMetadata.load(for: pair.master)
     }
+
+    /// Creates a side-by-side movie from the given pair of clips.
+    func merge(pair: PairedClips, to outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
+        guard let remote = pair.remote else {
+            completion(.failure(NSError(domain: "ClipManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Remote clip missing"])))
+            return
+        }
+        ClipMerger.merge(masterURL: pair.master, remoteURL: remote, outputURL: outputURL, completion: completion)
+    }
 }
