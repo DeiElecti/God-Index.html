@@ -83,4 +83,18 @@ final class ClipManager {
         let thumbURL = url.deletingPathExtension().appendingPathExtension("jpg")
         return UIImage(contentsOfFile: thumbURL.path)
     }
+
+    /// Computes and stores alignment metadata for a pair of clips.
+    func computeOffsetAndStore(for pair: PairedClips) {
+        guard let remote = pair.remote else { return }
+        if ClipMetadata.load(for: pair.master) != nil { return }
+        guard let offset = ClipAligner.align(masterURL: pair.master, remoteURL: remote) else { return }
+        let metadata = ClipMetadata(sessionID: pair.id, offset: offset)
+        metadata.save(for: pair.master)
+    }
+
+    /// Retrieves stored metadata for a clip pair, if present.
+    func metadata(for pair: PairedClips) -> ClipMetadata? {
+        ClipMetadata.load(for: pair.master)
+    }
 }

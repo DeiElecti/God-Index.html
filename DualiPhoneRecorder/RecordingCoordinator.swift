@@ -161,6 +161,14 @@ final class RecordingCoordinator {
         recorder.stop()
         HapticFeedback.recordingStopped()
         logger?.log("Recording stopped")
+        if let id = sessionID {
+            if let pair = clipManager.pairedClips().first(where: { $0.id == id }) {
+                clipManager.computeOffsetAndStore(for: pair)
+                if let meta = clipManager.metadata(for: pair) {
+                    logger?.log("Stored offset \(meta.offset) for session \(id)")
+                }
+            }
+        }
         clipManager.purgeOlderThan(days: 30)
         batteryMonitor.stopMonitoring()
         thermalMonitor.stopMonitoring()

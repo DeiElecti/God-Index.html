@@ -42,6 +42,9 @@ The provided Swift files illustrate the core components:
 - `RecordingCoordinator` sends a stop command to the peer when a recording ends
   so both devices stop simultaneously.
 - Thumbnails are now generated automatically when each recording completes.
+- `ClipMetadata.swift`: stores alignment data. When both clips are available,
+  `RecordingCoordinator` computes their audio offset and writes it to a sidecar
+  JSON file.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -74,7 +77,7 @@ Use `ClipManager` to list and clean up recordings after a session. The new `pair
 Call `delete(pair:)` to remove both clips at once when you no longer need them.
 Invoke `ClipExporter.export` with a pair's URLs to share them via the iOS share sheet or AirDrop.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
-`RecordingCoordinator` now generates thumbnails automatically when recording finishes. You can also call `ThumbnailGenerator.thumbnail(for:)` to regenerate a preview image for any clip.
+`RecordingCoordinator` now generates thumbnails automatically when recording finishes. When both clips from a session are available it also stores their offset using `ClipMetadata`, so later edits can apply the correction automatically. You can call `ThumbnailGenerator.thumbnail(for:)` to regenerate a preview image for any clip.
 If a duration was supplied when initiating the recording, the recorder stops automatically when that time elapses.
 
 This skeleton omits UI and error handling for brevity but provides a foundation
