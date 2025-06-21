@@ -36,6 +36,8 @@ The provided Swift files illustrate the core components:
 - `EventLogger.swift`: saves timestamped events to `events.log` for troubleshooting.
 - `ThumbnailGenerator.swift`: creates still previews for each clip so they can be
   displayed in a grid or exported as artwork.
+- `RecordingCoordinator` sends a stop command to the peer when a recording ends
+  so both devices stop simultaneously.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.

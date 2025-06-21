@@ -17,6 +17,8 @@ final class RecordingCoordinator {
     private let logger = EventLogger()
 
     private var countdownView: CountdownView?
+    private var isStopping = false
+    private let stopCommand = "STOP"
 
     private var startTime: TimeInterval?
     private var sessionID: UUID?
@@ -73,6 +75,8 @@ final class RecordingCoordinator {
             startTime = session.startTime
             sessionID = session.id
             scheduleStart(at: session.startTime)
+        } else if let command = String(data: data, encoding: .utf8), command == stopCommand {
+            stop(sendMessage: false)
         } else if data.count == MemoryLayout<UInt64>.size {
             let value = data.withUnsafeBytes { $0.load(as: UInt64.self) }
             let timestamp = TimeInterval(bitPattern: value)
@@ -137,7 +141,14 @@ final class RecordingCoordinator {
         orientationMonitor.start()
     }
 
-    func stop() {
+    func stop(sendMessage: Bool = true) {
+        guard !isStopping else { return }
+        isStopping = true
+        if sendMessage {
+            if let data = stopCommand.data(using: .utf8) {
+                try? peer.send(data: data)
+            }
+        }
         recorder.stop()
         HapticFeedback.recordingStopped()
         logger?.log("Recording stopped")
