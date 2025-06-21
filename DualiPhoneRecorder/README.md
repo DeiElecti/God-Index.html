@@ -22,6 +22,8 @@ The provided Swift files illustrate the core components:
 - `BatteryMonitor.swift`: watches battery level during recording and stops the session if it falls below 5%.
  - `ThermalMonitor.swift`: observes device thermal state. When temperature is serious, the recorder drops to 720p, and if critical, the session stops.
 - `DiskSpaceMonitor.swift`: monitors remaining disk space and ends the session if free space drops too low.
+- `OrientationMonitor.swift`: tracks device orientation changes and updates the
+  recording orientation so clips stay upright.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.

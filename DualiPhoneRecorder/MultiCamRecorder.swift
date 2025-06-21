@@ -8,6 +8,7 @@ final class MultiCamRecorder: NSObject {
     private var backInput: AVCaptureDeviceInput?
     private var frontInput: AVCaptureDeviceInput?
     private var audioInput: AVCaptureDeviceInput?
+    private var orientation: AVCaptureVideoOrientation = .portrait
 
     /// Session preset applied during configuration. Defaults to 1080p.
     var sessionPreset: AVCaptureSession.Preset = .hd1920x1080
@@ -50,7 +51,12 @@ final class MultiCamRecorder: NSObject {
         if session.canAddOutput(movieFileOutput!) { session.addOutput(movieFileOutput!) }
     }
 
-    func start(to url: URL) {
+    func start(to url: URL, orientation: AVCaptureVideoOrientation = .portrait) {
+        self.orientation = orientation
+        if let connection = movieFileOutput?.connection(with: .video),
+           connection.isVideoOrientationSupported {
+            connection.videoOrientation = orientation
+        }
         session.startRunning()
         movieFileOutput?.startRecording(to: url, recordingDelegate: self)
     }
@@ -58,6 +64,15 @@ final class MultiCamRecorder: NSObject {
     func stop() {
         movieFileOutput?.stopRecording()
         session.stopRunning()
+    }
+
+    /// Updates the orientation of the recording while the session is running.
+    func update(orientation: AVCaptureVideoOrientation) {
+        self.orientation = orientation
+        if let connection = movieFileOutput?.connection(with: .video),
+           connection.isVideoOrientationSupported {
+            connection.videoOrientation = orientation
+        }
     }
 
     /// Lower the session preset to 720p if possible.

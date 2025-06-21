@@ -11,6 +11,7 @@ final class RecordingCoordinator {
     private let batteryMonitor = BatteryMonitor()
     private let thermalMonitor = ThermalMonitor()
     private let diskMonitor = DiskSpaceMonitor()
+    private let orientationMonitor = OrientationMonitor()
 
     private var countdownView: CountdownView?
 
@@ -75,7 +76,7 @@ final class RecordingCoordinator {
 
         let mode: MultiCamRecorder.Mode = AVCaptureMultiCamSession.isMultiCamSupported ? .dual : .single
         try? recorder.configure(mode: mode)
-        recorder.start(to: url)
+        recorder.start(to: url, orientation: OrientationMonitor.currentOrientation)
         SyncCueGenerator.trigger()
         batteryMonitor.onCriticalLevel = { [weak self] in
             self?.stop()
@@ -92,6 +93,11 @@ final class RecordingCoordinator {
             self?.stop()
         }
         diskMonitor.startMonitoring()
+
+        orientationMonitor.onOrientationChange = { [weak self] orientation in
+            self?.recorder.update(orientation: orientation)
+        }
+        orientationMonitor.start()
     }
 
     func stop() {
@@ -100,6 +106,7 @@ final class RecordingCoordinator {
         batteryMonitor.stopMonitoring()
         thermalMonitor.stopMonitoring()
         diskMonitor.stopMonitoring()
+        orientationMonitor.stop()
     }
 
     /// Returns the list of recorded clip URLs.
