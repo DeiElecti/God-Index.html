@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import Network
 
 /// Coordinates synced recording between two peers.
 final class RecordingCoordinator {
@@ -12,6 +13,7 @@ final class RecordingCoordinator {
     private let thermalMonitor = ThermalMonitor()
     private let diskMonitor = DiskSpaceMonitor()
     private let orientationMonitor = OrientationMonitor()
+    private let connectivityMonitor = ConnectivityMonitor()
 
     private var countdownView: CountdownView?
 
@@ -35,6 +37,13 @@ final class RecordingCoordinator {
         case .host: peer.startHosting()
         case .guest: peer.joinSession()
         }
+        connectivityMonitor.onConnect = {
+            ClockSync.shared.resync()
+        }
+        connectivityMonitor.onDisconnect = { [weak self] in
+            self?.handleNetworkLoss()
+        }
+        connectivityMonitor.start()
     }
 
     /// Called by UI when user taps record.
@@ -115,6 +124,7 @@ final class RecordingCoordinator {
         thermalMonitor.stopMonitoring()
         diskMonitor.stopMonitoring()
         orientationMonitor.stop()
+        connectivityMonitor.stop()
     }
 
     /// Returns the list of recorded clip URLs.
@@ -136,6 +146,11 @@ final class RecordingCoordinator {
 
     private func handlePeerDisconnect() {
         print("Peer disconnected")
+        stop()
+    }
+
+    private func handleNetworkLoss() {
+        print("Network disconnected")
         stop()
     }
 }

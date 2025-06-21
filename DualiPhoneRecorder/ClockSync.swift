@@ -19,6 +19,14 @@ final class ClockSync {
 #endif
     }
 
+    /// Re-syncs with the NTP server. Call when connectivity is restored.
+    func resync() {
+        timeObserver = Clock.sync { _ in }
+#if canImport(TrueTime)
+        trueTime.start()
+#endif
+    }
+
     /// Returns the current synchronized time. Falls back to system clock.
     var now: TimeInterval {
         if let time = Clock.now {

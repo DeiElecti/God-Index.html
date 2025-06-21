@@ -29,6 +29,8 @@ The provided Swift files illustrate the core components:
 - `HapticFeedback.swift`: emits subtle haptic cues when recording starts and stops.
 - `PeerSessionManager.swift` now reports when the connection is lost so
   `RecordingCoordinator` can stop recording if the peer disconnects.
+- `ConnectivityMonitor.swift`: watches overall network reachability and stops
+  recording when connectivity drops, resyncing the clock when it returns.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -52,6 +54,8 @@ reduces quality when the device is too warm and stops recording if it reaches a 
 `DiskSpaceMonitor` keeps an eye on free storage and stops before space runs out.
 If the connection to the peer drops, `RecordingCoordinator` is notified and
 automatically stops the recording to avoid unsynchronised clips.
+If overall network connectivity is lost, `ConnectivityMonitor` also ends the
+session and re-syncs the clock once the connection returns.
 
 Use `ClipManager` to list and clean up recordings after a session.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
