@@ -19,6 +19,7 @@ final class RecordingCoordinator {
     private var countdownView: CountdownView?
 
     private var startTime: TimeInterval?
+    private var sessionID: UUID?
     private var role: Role = .host
 
     enum Role { case host, guest }
@@ -57,18 +58,27 @@ final class RecordingCoordinator {
     func initiateRecording() {
         let start = ClockSync.shared.now + 3
         startTime = start
-        let message = withUnsafeBytes(of: start.bitPattern) { Data($0) }
-        try? peer.send(data: message)
-        logger?.log("Initiated recording for timestamp \(start)")
+        let id = UUID()
+        sessionID = id
+        let session = RecordingSession(id: id, startTime: start)
+        if let data = try? JSONEncoder().encode(session) {
+            try? peer.send(data: data)
+        }
+        logger?.log("Initiated recording for session \(id)")
         scheduleStart(at: start)
     }
 
     private func handle(data: Data) {
-        guard data.count == MemoryLayout<UInt64>.size else { return }
-        let value = data.withUnsafeBytes { $0.load(as: UInt64.self) }
-        let timestamp = TimeInterval(bitPattern: value)
-        startTime = timestamp
-        scheduleStart(at: timestamp)
+        if let session = try? JSONDecoder().decode(RecordingSession.self, from: data) {
+            startTime = session.startTime
+            sessionID = session.id
+            scheduleStart(at: session.startTime)
+        } else if data.count == MemoryLayout<UInt64>.size {
+            let value = data.withUnsafeBytes { $0.load(as: UInt64.self) }
+            let timestamp = TimeInterval(bitPattern: value)
+            startTime = timestamp
+            scheduleStart(at: timestamp)
+        }
     }
 
     private func scheduleStart(at timestamp: TimeInterval) {
@@ -146,9 +156,12 @@ final class RecordingCoordinator {
 
     private func outputURL() -> URL? {
         let dir = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd_HHmmss"
-        let name = formatter.string(from: Date()) + (role == .host ? "_master.mov" : "_remote.mov")
+        let identifier = sessionID?.uuidString ?? {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd_HHmmss"
+            return formatter.string(from: Date())
+        }()
+        let name = identifier + (role == .host ? "_master.mov" : "_remote.mov")
         return dir?.appendingPathComponent(name)
     }
 
