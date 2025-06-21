@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 /// Manages recorded movie files within the app's Documents directory.
 final class ClipManager {
@@ -67,5 +68,19 @@ final class ClipManager {
         if let remote = pair.remote {
             try delete(remote)
         }
+    }
+
+    /// Generates and saves a JPEG thumbnail alongside the movie file.
+    func generateThumbnail(for url: URL) {
+        guard let image = ThumbnailGenerator.thumbnail(for: url),
+              let data = image.jpegData(compressionQuality: 0.8) else { return }
+        let thumbURL = url.deletingPathExtension().appendingPathExtension("jpg")
+        try? data.write(to: thumbURL)
+    }
+
+    /// Returns the stored thumbnail image for a movie file, if available.
+    func thumbnail(for url: URL) -> UIImage? {
+        let thumbURL = url.deletingPathExtension().appendingPathExtension("jpg")
+        return UIImage(contentsOfFile: thumbURL.path)
     }
 }

@@ -38,6 +38,7 @@ The provided Swift files illustrate the core components:
   displayed in a grid or exported as artwork.
 - `RecordingCoordinator` sends a stop command to the peer when a recording ends
   so both devices stop simultaneously.
+- Thumbnails are now generated automatically when each recording completes.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -70,7 +71,7 @@ Use `ClipManager` to list and clean up recordings after a session. The new `pair
 Call `delete(pair:)` to remove both clips at once when you no longer need them.
 Invoke `ClipExporter.export` with a pair's URLs to share them via the iOS share sheet or AirDrop.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
-Generate thumbnails with `ThumbnailGenerator.thumbnail(for:)` to display previews in a clip grid.
+`RecordingCoordinator` now generates thumbnails automatically when recording finishes. You can also call `ThumbnailGenerator.thumbnail(for:)` to regenerate a preview image for any clip.
 
 This skeleton omits UI and error handling for brevity but provides a foundation
 for the networking, timing, and recording workflow.

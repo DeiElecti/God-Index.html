@@ -114,6 +114,10 @@ final class RecordingCoordinator {
 
         let mode: MultiCamRecorder.Mode = AVCaptureMultiCamSession.isMultiCamSupported ? .dual : .single
         try? recorder.configure(mode: mode)
+        recorder.onFinish = { [weak self] url in
+            self?.clipManager.generateThumbnail(for: url)
+            self?.logger?.log("Thumbnail generated for \(url.lastPathComponent)")
+        }
         recorder.start(to: url, orientation: OrientationMonitor.currentOrientation)
         logger?.log("Started recording to \(url.lastPathComponent)")
         HapticFeedback.recordingStarted()

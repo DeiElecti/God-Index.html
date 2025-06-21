@@ -8,6 +8,8 @@ final class MultiCamRecorder: NSObject {
     private var backInput: AVCaptureDeviceInput?
     private var frontInput: AVCaptureDeviceInput?
     private var audioInput: AVCaptureDeviceInput?
+    /// Called when the movie file output finishes writing.
+    var onFinish: ((URL) -> Void)?
     private var orientation: AVCaptureVideoOrientation = .portrait
 
     /// Session preset applied during configuration. Defaults to 1080p.
@@ -88,7 +90,9 @@ final class MultiCamRecorder: NSObject {
 }
 
 extension MultiCamRecorder: AVCaptureFileOutputRecordingDelegate {
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {}
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        onFinish?(outputFileURL)
+    }
 }
 
 enum SetupError: Error {
