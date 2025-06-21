@@ -20,6 +20,7 @@ The provided Swift files illustrate the core components:
 - `CountdownView.swift`: overlays a countdown before recording so users know exactly when capture will start.
 - `AudioSync.swift`: simple vDSP-based audio correlation to refine clip offsets.
 - `ClipManager.swift`: lists recorded movies, allows deletion, and purges old clips.
+- `ClipAligner.swift`: computes audio offsets between master and remote clips for post-recording alignment.
 - `BatteryMonitor.swift`: watches battery level during recording and stops the session if it falls below 5%.
  - `ThermalMonitor.swift`: observes device thermal state. When temperature is serious, the recorder drops to 720p, and if critical, the session stops.
 - `DiskSpaceMonitor.swift`: monitors remaining disk space and ends the session if free space drops too low.
@@ -53,6 +54,7 @@ If the connection to the peer drops, `RecordingCoordinator` is notified and
 automatically stops the recording to avoid unsynchronised clips.
 
 Use `ClipManager` to list and clean up recordings after a session.
+Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
 
 This skeleton omits UI and error handling for brevity but provides a foundation
 for the networking, timing, and recording workflow.
