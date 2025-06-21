@@ -26,6 +26,8 @@ The provided Swift files illustrate the core components:
 - `OrientationMonitor.swift`: tracks device orientation changes and updates the
   recording orientation so clips stay upright.
 - `HapticFeedback.swift`: emits subtle haptic cues when recording starts and stops.
+- `PeerSessionManager.swift` now reports when the connection is lost so
+  `RecordingCoordinator` can stop recording if the peer disconnects.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -47,6 +49,8 @@ While recording, `BatteryMonitor` watches the remaining charge and
 automatically stops the session if it drops below 5%. `ThermalMonitor`
 reduces quality when the device is too warm and stops recording if it reaches a critical state.
 `DiskSpaceMonitor` keeps an eye on free storage and stops before space runs out.
+If the connection to the peer drops, `RecordingCoordinator` is notified and
+automatically stops the recording to avoid unsynchronised clips.
 
 Use `ClipManager` to list and clean up recordings after a session.
 

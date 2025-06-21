@@ -37,7 +37,16 @@ final class PeerSessionManager: NSObject {
 }
 
 extension PeerSessionManager: MCSessionDelegate {
-    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {}
+    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
+        switch state {
+        case .connected:
+            onConnect?()
+        case .notConnected:
+            onDisconnect?()
+        default:
+            break
+        }
+    }
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         onData?(data)
     }
@@ -66,7 +75,21 @@ extension PeerSessionManager {
         set { onDataBox.value = newValue }
     }
 
+    /// Called when a peer connection is established.
+    var onConnect: (() -> Void)? {
+        get { onConnectBox.value }
+        set { onConnectBox.value = newValue }
+    }
+
+    /// Called when the peer disconnects.
+    var onDisconnect: (() -> Void)? {
+        get { onDisconnectBox.value }
+        set { onDisconnectBox.value = newValue }
+    }
+
     private let onDataBox = CallbackBox<Data>()
+    private let onConnectBox = CallbackBox<Void>()
+    private let onDisconnectBox = CallbackBox<Void>()
 }
 
 /// Helper to allow simple stored property for closure in extensions.

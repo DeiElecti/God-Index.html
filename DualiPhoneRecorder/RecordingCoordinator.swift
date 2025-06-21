@@ -25,6 +25,12 @@ final class RecordingCoordinator {
         peer.onData = { [weak self] data in
             self?.handle(data: data)
         }
+        peer.onConnect = { [weak self] in
+            self?.handlePeerConnect()
+        }
+        peer.onDisconnect = { [weak self] in
+            self?.handlePeerDisconnect()
+        }
         switch role {
         case .host: peer.startHosting()
         case .guest: peer.joinSession()
@@ -122,5 +128,14 @@ final class RecordingCoordinator {
         formatter.dateFormat = "yyyyMMdd_HHmmss"
         let name = formatter.string(from: Date()) + (role == .host ? "_master.mov" : "_remote.mov")
         return dir?.appendingPathComponent(name)
+    }
+
+    private func handlePeerConnect() {
+        print("Peer connected")
+    }
+
+    private func handlePeerDisconnect() {
+        print("Peer disconnected")
+        stop()
     }
 }
