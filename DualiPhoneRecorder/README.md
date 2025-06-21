@@ -8,8 +8,9 @@ The provided Swift files illustrate the core components:
 
 - `PeerSessionManager.swift`: handles device discovery and communication with
   `MultipeerConnectivity`.
-- `ClockSync.swift`: demonstrates how you could obtain an accurate clock using
-  the [Kronos](https://github.com/MobileNativeFoundation/Kronos) library.
+ - `ClockSync.swift`: demonstrates how you could obtain an accurate clock using
+   the [Kronos](https://github.com/MobileNativeFoundation/Kronos) library with an
+   optional fallback to [TrueTime.swift](https://github.com/instacart/TrueTime.swift).
 - `MultiCamRecorder.swift`: sets up an `AVCaptureMultiCamSession` to capture
   front and back cameras plus microphone audio and record to local files.
 - `RecordingCoordinator.swift`: brings the pieces together to schedule a synced
@@ -32,7 +33,8 @@ can be integrated into one.
 ## Usage
 
 1. Add these Swift files to your Xcode project.
-2. Ensure your project includes the Kronos package for NTP time sync.
+2. Ensure your project includes the Kronos package for NTP time sync (or
+   TrueTime.swift as a fallback).
 3. Build and run on two iOS devices with multi-camera support (A12 or later).
 4. Use one device as the host; it will advertise over `MultipeerConnectivity`.
 5. When both devices are connected, press record. They will negotiate a start
