@@ -22,6 +22,7 @@ final class RecordingCoordinator {
 
     private var startTime: TimeInterval?
     private var sessionID: UUID?
+    private var duration: TimeInterval?
     private var role: Role = .host
 
     enum Role { case host, guest }
@@ -56,13 +57,14 @@ final class RecordingCoordinator {
         logger?.log("Coordinator initialised")
     }
 
-    /// Called by UI when user taps record.
-    func initiateRecording() {
+    /// Called by UI when user taps record. Optionally specify a duration in seconds.
+    func initiateRecording(duration: TimeInterval? = nil) {
         let start = ClockSync.shared.now + 3
         startTime = start
         let id = UUID()
         sessionID = id
-        let session = RecordingSession(id: id, startTime: start)
+        self.duration = duration
+        let session = RecordingSession(id: id, startTime: start, duration: duration)
         if let data = try? JSONEncoder().encode(session) {
             try? peer.send(data: data)
         }
@@ -74,6 +76,7 @@ final class RecordingCoordinator {
         if let session = try? JSONDecoder().decode(RecordingSession.self, from: data) {
             startTime = session.startTime
             sessionID = session.id
+            duration = session.duration
             scheduleStart(at: session.startTime)
         } else if let command = String(data: data, encoding: .utf8), command == stopCommand {
             stop(sendMessage: false)
@@ -118,7 +121,9 @@ final class RecordingCoordinator {
             self?.clipManager.generateThumbnail(for: url)
             self?.logger?.log("Thumbnail generated for \(url.lastPathComponent)")
         }
-        recorder.start(to: url, orientation: OrientationMonitor.currentOrientation)
+        recorder.start(to: url,
+                       orientation: OrientationMonitor.currentOrientation,
+                       duration: duration)
         logger?.log("Started recording to \(url.lastPathComponent)")
         HapticFeedback.recordingStarted()
         SyncCueGenerator.trigger()

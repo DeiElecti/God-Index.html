@@ -11,6 +11,7 @@ final class MultiCamRecorder: NSObject {
     /// Called when the movie file output finishes writing.
     var onFinish: ((URL) -> Void)?
     private var orientation: AVCaptureVideoOrientation = .portrait
+    private var durationTimer: Timer?
 
     /// Session preset applied during configuration. Defaults to 1080p.
     var sessionPreset: AVCaptureSession.Preset = .hd1920x1080
@@ -53,7 +54,9 @@ final class MultiCamRecorder: NSObject {
         if session.canAddOutput(movieFileOutput!) { session.addOutput(movieFileOutput!) }
     }
 
-    func start(to url: URL, orientation: AVCaptureVideoOrientation = .portrait) {
+    func start(to url: URL,
+               orientation: AVCaptureVideoOrientation = .portrait,
+               duration: TimeInterval? = nil) {
         self.orientation = orientation
         if let connection = movieFileOutput?.connection(with: .video),
            connection.isVideoOrientationSupported {
@@ -61,9 +64,17 @@ final class MultiCamRecorder: NSObject {
         }
         session.startRunning()
         movieFileOutput?.startRecording(to: url, recordingDelegate: self)
+        if let duration = duration {
+            durationTimer = Timer.scheduledTimer(withTimeInterval: duration,
+                                                repeats: false) { [weak self] _ in
+                self?.stop()
+            }
+        }
     }
 
     func stop() {
+        durationTimer?.invalidate()
+        durationTimer = nil
         movieFileOutput?.stopRecording()
         session.stopRunning()
     }

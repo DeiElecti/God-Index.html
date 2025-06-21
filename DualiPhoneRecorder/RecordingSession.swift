@@ -6,4 +6,6 @@ struct RecordingSession: Codable {
     let id: UUID
     /// Absolute start timestamp in seconds since 1970.
     let startTime: TimeInterval
+    /// Optional duration for automatic stop.
+    let duration: TimeInterval?
 }
