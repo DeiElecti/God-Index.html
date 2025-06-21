@@ -18,7 +18,9 @@ The provided Swift files illustrate the core components:
 - `PreflightChecks.swift`: verifies camera and microphone permission, battery level, and available storage before recording starts.
 - `SyncCueGenerator.swift`: flashes the screen and plays a tone at T0 for easier alignment.
 - `CountdownView.swift`: overlays a countdown before recording so users know exactly when capture will start.
-- `AudioSync.swift`: simple vDSP-based audio correlation to refine clip offsets.
+- `AudioSync.swift`: uses vDSP to cross-correlate the audio tracks and compute
+  precise offsets. Only the first few seconds are analysed and DC offsets are
+  removed for better accuracy.
 - `ClipManager.swift`: lists recorded movies, allows deletion, purges old clips, groups paired clips by session ID via `pairedClips()`, and can delete an entire pair via `delete(pair:)`.
 - `ClipExporter.swift`: presents a share sheet so paired clips can be exported or AirDropped.
 - `ClipAligner.swift`: computes audio offsets between master and remote clips for post-recording alignment.

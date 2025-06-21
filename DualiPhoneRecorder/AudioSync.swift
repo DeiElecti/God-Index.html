@@ -10,13 +10,21 @@ enum AudioSync {
     }
 
     /// Returns the time offset (in seconds) between two audio files by cross-correlating their waveforms.
+    static let analysisDuration: TimeInterval = 10
+
     static func offset(between urlA: URL, and urlB: URL) -> TimeInterval? {
-        guard let bufferA = loadSamples(from: urlA),
-              let bufferB = loadSamples(from: urlB) else { return nil }
+        guard let bufferA = loadSamples(from: urlA, limit: analysisDuration),
+              let bufferB = loadSamples(from: urlB, limit: analysisDuration) else { return nil }
 
         let count = min(bufferA.samples.count, bufferB.samples.count)
-        let a = Array(bufferA.samples[0..<count])
-        let b = Array(bufferB.samples[0..<count])
+        var a = Array(bufferA.samples[0..<count])
+        var b = Array(bufferB.samples[0..<count])
+
+        // Remove DC offset before correlation
+        let meanA = a.reduce(0, +) / Float(a.count)
+        let meanB = b.reduce(0, +) / Float(b.count)
+        vDSP_vsmsa(a, 1, [-1], [meanA], &a, 1, vDSP_Length(a.count))
+        vDSP_vsmsa(b, 1, [-1], [meanB], &b, 1, vDSP_Length(b.count))
 
         var result = [Float](repeating: 0, count: a.count + b.count - 1)
         vDSP_conv(a, 1, b.reversed(), 1, &result, 1, vDSP_Length(result.count), vDSP_Length(b.count))
@@ -28,7 +36,7 @@ enum AudioSync {
         return TimeInterval(Float(offsetSamples) / sampleRate)
     }
 
-    private static func loadSamples(from url: URL) -> AudioBuffer? {
+    private static func loadSamples(from url: URL, limit duration: TimeInterval) -> AudioBuffer? {
         let asset = AVAsset(url: url)
         guard let track = asset.tracks(withMediaType: .audio).first else { return nil }
         do {
@@ -49,7 +57,8 @@ enum AudioSync {
                 sampleRate = Float(asbd.pointee.mSampleRate)
             }
 
-            while reader.status == .reading {
+            let maxSamples = Int(duration * Double(sampleRate))
+            while reader.status == .reading && samples.count < maxSamples {
                 guard let buffer = output.copyNextSampleBuffer(),
                       let block = CMSampleBufferGetDataBuffer(buffer) else { break }
                 let length = CMBlockBufferGetDataLength(block)
