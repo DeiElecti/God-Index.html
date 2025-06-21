@@ -24,6 +24,7 @@ The provided Swift files illustrate the core components:
 - `DiskSpaceMonitor.swift`: monitors remaining disk space and ends the session if free space drops too low.
 - `OrientationMonitor.swift`: tracks device orientation changes and updates the
   recording orientation so clips stay upright.
+- `HapticFeedback.swift`: emits subtle haptic cues when recording starts and stops.
 
 The code is written for Swift 5 and iOS 13+. It is not a full Xcode project but
 can be integrated into one.
@@ -39,7 +40,7 @@ can be integrated into one.
 
 The coordinator performs basic preflight checks (permissions, battery, and disk space). At
 the scheduled start, a flash and tone are emitted so the clips can be
-auto-aligned later using `AudioSync.offset`.
+auto-aligned later using `AudioSync.offset`. Subtle haptic feedback signals when recording begins and ends.
 While recording, `BatteryMonitor` watches the remaining charge and
 automatically stops the session if it drops below 5%. `ThermalMonitor`
 reduces quality when the device is too warm and stops recording if it reaches a critical state.

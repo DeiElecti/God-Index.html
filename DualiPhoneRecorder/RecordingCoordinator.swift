@@ -77,6 +77,7 @@ final class RecordingCoordinator {
         let mode: MultiCamRecorder.Mode = AVCaptureMultiCamSession.isMultiCamSupported ? .dual : .single
         try? recorder.configure(mode: mode)
         recorder.start(to: url, orientation: OrientationMonitor.currentOrientation)
+        HapticFeedback.recordingStarted()
         SyncCueGenerator.trigger()
         batteryMonitor.onCriticalLevel = { [weak self] in
             self?.stop()
@@ -102,6 +103,7 @@ final class RecordingCoordinator {
 
     func stop() {
         recorder.stop()
+        HapticFeedback.recordingStopped()
         clipManager.purgeOlderThan(days: 30)
         batteryMonitor.stopMonitoring()
         thermalMonitor.stopMonitoring()
