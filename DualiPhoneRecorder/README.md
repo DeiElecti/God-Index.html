@@ -19,7 +19,7 @@ The provided Swift files illustrate the core components:
 - `SyncCueGenerator.swift`: flashes the screen and plays a tone at T0 for easier alignment.
 - `CountdownView.swift`: overlays a countdown before recording so users know exactly when capture will start.
 - `AudioSync.swift`: simple vDSP-based audio correlation to refine clip offsets.
-- `ClipManager.swift`: lists recorded movies, allows deletion, and purges old clips.
+- `ClipManager.swift`: lists recorded movies, allows deletion, purges old clips, and now groups paired clips by session ID via `pairedClips()`.
 - `ClipAligner.swift`: computes audio offsets between master and remote clips for post-recording alignment.
 - `RecordingSession.swift`: defines a session identifier and timestamp sent between peers so each device names its files consistently.
 - `BatteryMonitor.swift`: watches battery level during recording and stops the session if it falls below 5%.
@@ -61,7 +61,7 @@ session and re-syncs the clock once the connection returns.
 All of these events are written to `events.log` by `EventLogger` for later review.
 
 Each recording session is tagged with a UUID shared across both devices. The file names now begin with this identifier so clips from the same session are easy to match (e.g. `A1B2C_master.mov` and `A1B2C_remote.mov`).
-Use `ClipManager` to list and clean up recordings after a session.
+Use `ClipManager` to list and clean up recordings after a session. The new `pairedClips()` helper groups master and remote files for easy review.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
 
 This skeleton omits UI and error handling for brevity but provides a foundation

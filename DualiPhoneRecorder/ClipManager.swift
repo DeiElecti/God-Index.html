@@ -35,4 +35,29 @@ final class ClipManager {
             }
         }
     }
+
+    /// Represents a pair of clips from the same recording session.
+    struct PairedClips {
+        let id: UUID
+        let master: URL
+        let remote: URL?
+    }
+
+    /// Returns arrays of paired clips grouped by the session identifier encoded in the filename.
+    func pairedClips() -> [PairedClips] {
+        var lookup: [UUID: (URL, URL?)] = [:]
+        for url in clips() {
+            let name = url.deletingPathExtension().lastPathComponent
+            let components = name.split(separator: "_")
+            guard components.count >= 2, let id = UUID(uuidString: String(components[0])) else { continue }
+            let role = components[1]
+            if role == "master" {
+                lookup[id] = (url, lookup[id]?.1)
+            } else if role == "remote" {
+                let master = lookup[id]?.0
+                lookup[id] = (master ?? url, url)
+            }
+        }
+        return lookup.map { PairedClips(id: $0.key, master: $0.value.0, remote: $0.value.1) }
+    }
 }
