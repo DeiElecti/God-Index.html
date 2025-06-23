@@ -78,6 +78,13 @@ final class ClipManager {
         try? data.write(to: thumbURL)
     }
 
+    /// Generates thumbnails for all recorded clips.
+    func generateThumbnailsForAllClips() {
+        for url in clips() {
+            generateThumbnail(for: url)
+        }
+    }
+
     /// Returns the stored thumbnail image for a movie file, if available.
     func thumbnail(for url: URL) -> UIImage? {
         let thumbURL = url.deletingPathExtension().appendingPathExtension("jpg")
@@ -93,19 +100,34 @@ final class ClipManager {
         metadata.save(for: pair.master)
     }
 
+    /// Computes offsets for every pair that lacks stored metadata.
+    func computeOffsetsForAllPairs() {
+        for pair in pairedClips() {
+            computeOffsetAndStore(for: pair)
+        }
+    }
+
     /// Retrieves stored metadata for a clip pair, if present.
     func metadata(for pair: PairedClips) -> ClipMetadata? {
         ClipMetadata.load(for: pair.master)
     }
 
-    /// Creates a side-by-side movie from the given pair of clips using the stored
+    /// Creates a single combined movie from the given pair of clips using the stored
     /// audio offset if available.
-    func merge(pair: PairedClips, to outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
+    func merge(pair: PairedClips,
+               to outputURL: URL,
+               layout: ClipMerger.Layout = .horizontal,
+               completion: @escaping (Result<URL, Error>) -> Void) {
         guard let remote = pair.remote else {
             completion(.failure(NSError(domain: "ClipManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Remote clip missing"])))
             return
         }
         let offset = metadata(for: pair)?.offset ?? 0
-        ClipMerger.merge(masterURL: pair.master, remoteURL: remote, outputURL: outputURL, offset: offset, completion: completion)
+        ClipMerger.merge(masterURL: pair.master,
+                         remoteURL: remote,
+                         outputURL: outputURL,
+                         offset: offset,
+                         layout: layout,
+                         completion: completion)
     }
 }

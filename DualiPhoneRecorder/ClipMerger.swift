@@ -1,8 +1,12 @@
 import Foundation
 import AVFoundation
 
-/// Combines master and remote clips into a single side-by-side movie.
+/// Combines master and remote clips into a single movie, either horizontally
+/// or vertically stacked.
 struct ClipMerger {
+    /// Layout used when combining the two videos.
+    enum Layout { case horizontal, vertical }
+
     /// Merges the two movie files and writes the result to `outputURL`.
     /// - Parameters:
     ///   - masterURL: URL of the primary clip.
@@ -15,6 +19,7 @@ struct ClipMerger {
                       remoteURL: URL,
                       outputURL: URL,
                       offset: TimeInterval = 0,
+                      layout: Layout = .horizontal,
                       completion: @escaping (Result<URL, Error>) -> Void) {
         let masterAsset = AVAsset(url: masterURL)
         let remoteAsset = AVAsset(url: remoteURL)
@@ -55,19 +60,32 @@ struct ClipMerger {
             return
         }
 
-        // Render side-by-side using a video composition.
+        // Render using a video composition.
         let videoComposition = AVMutableVideoComposition()
-        videoComposition.renderSize = CGSize(width: masterTrack.naturalSize.width * 2, height: masterTrack.naturalSize.height)
+        switch layout {
+        case .horizontal:
+            videoComposition.renderSize = CGSize(width: masterTrack.naturalSize.width * 2,
+                                                height: masterTrack.naturalSize.height)
+        case .vertical:
+            videoComposition.renderSize = CGSize(width: masterTrack.naturalSize.width,
+                                                height: masterTrack.naturalSize.height * 2)
+        }
         videoComposition.frameDuration = masterTrack.minFrameDuration
 
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(start: .zero, duration: masterAsset.duration)
 
         let masterLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrackA!)
-        masterLayerInstruction.setTransform(CGAffineTransform(translationX: 0, y: 0), at: .zero)
+        masterLayerInstruction.setTransform(.identity, at: .zero)
 
         let remoteLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrackB!)
-        let translate = CGAffineTransform(translationX: masterTrack.naturalSize.width, y: 0)
+        let translate: CGAffineTransform
+        switch layout {
+        case .horizontal:
+            translate = CGAffineTransform(translationX: masterTrack.naturalSize.width, y: 0)
+        case .vertical:
+            translate = CGAffineTransform(translationX: 0, y: masterTrack.naturalSize.height)
+        }
         remoteLayerInstruction.setTransform(translate, at: .zero)
 
         instruction.layerInstructions = [masterLayerInstruction, remoteLayerInstruction]
