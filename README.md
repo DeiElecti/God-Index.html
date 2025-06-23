@@ -3,6 +3,7 @@
 ## Overview
 
 This project presents a comparative study of the trials faced by three significant biblical figures: David, Jesus, and Solomon. The website offers insights into their experiences, challenges, and the lessons we can draw from their stories.
+It also contains an experimental Swift module in `DualiPhoneRecorder/` that demonstrates synchronized video capture across two iPhones. The two topics are unrelated but share this repository for convenience.
 
 ## Website Content
 
