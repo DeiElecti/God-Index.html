@@ -9,7 +9,13 @@ struct ClipMerger {
     ///   - remoteURL: URL of the secondary clip.
     ///   - outputURL: Destination for the merged movie.
     ///   - completion: Called on the main queue when export finishes.
-    static func merge(masterURL: URL, remoteURL: URL, outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
+    /// - parameter offset: Optional time offset between the two clips. Positive values delay
+    ///   the remote clip relative to the master. Defaults to `0`.
+    static func merge(masterURL: URL,
+                      remoteURL: URL,
+                      outputURL: URL,
+                      offset: TimeInterval = 0,
+                      completion: @escaping (Result<URL, Error>) -> Void) {
         let masterAsset = AVAsset(url: masterURL)
         let remoteAsset = AVAsset(url: remoteURL)
 
@@ -28,9 +34,21 @@ struct ClipMerger {
         let videoTrackB = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
         let audioTrack = mixComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
 
+        let masterStart: CMTime
+        let remoteStart: CMTime
+        if offset >= 0 {
+            masterStart = CMTime(seconds: offset, preferredTimescale: 600)
+            remoteStart = .zero
+        } else {
+            masterStart = .zero
+            remoteStart = CMTime(seconds: -offset, preferredTimescale: 600)
+        }
+
+        let duration = CMTimeMinimum(masterAsset.duration - masterStart, remoteAsset.duration - remoteStart)
+
         do {
-            try videoTrackA?.insertTimeRange(CMTimeRange(start: .zero, duration: masterAsset.duration), of: masterTrack, at: .zero)
-            try videoTrackB?.insertTimeRange(CMTimeRange(start: .zero, duration: masterAsset.duration), of: remoteTrack, at: .zero)
+            try videoTrackA?.insertTimeRange(CMTimeRange(start: masterStart, duration: duration), of: masterTrack, at: .zero)
+            try videoTrackB?.insertTimeRange(CMTimeRange(start: remoteStart, duration: duration), of: remoteTrack, at: .zero)
             try audioTrack?.insertTimeRange(CMTimeRange(start: .zero, duration: masterAsset.duration), of: masterAudio, at: .zero)
         } catch {
             completion(.failure(error))

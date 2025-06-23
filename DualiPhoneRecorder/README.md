@@ -78,7 +78,8 @@ Use `ClipManager` to list and clean up recordings after a session. The new `pair
 Call `delete(pair:)` to remove both clips at once when you no longer need them.
 Invoke `ClipExporter.export` with a pair's URLs to share them via the iOS share sheet or AirDrop.
 Use `ClipAligner.align` to compute the audio offset between paired clips for seamless multicam editing.
-Use `ClipMerger.merge` to create a single side-by-side movie for quick preview or sharing.
+Use `ClipMerger.merge` via `ClipManager.merge` to create a single side-by-side movie.
+If alignment metadata exists for the pair, the merge automatically applies the stored offset so the videos are in sync.
 `RecordingCoordinator` now generates thumbnails automatically when recording finishes. When both clips from a session are available it also stores their offset using `ClipMetadata`, so later edits can apply the correction automatically. You can call `ThumbnailGenerator.thumbnail(for:)` to regenerate a preview image for any clip.
 If a duration was supplied when initiating the recording, the recorder stops automatically when that time elapses.
 
